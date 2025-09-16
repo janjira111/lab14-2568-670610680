@@ -13,9 +13,21 @@ export const marathonSchema = z
     gender: z.enum(["male", "female"], { message: "Select gender" }),
     agree: z.boolean().default(false),
     email: z.email(),
+    password: z
+      .string()
+      .min(6,{ message: "Password must contain at least 6 characters"})
+      .max(12,{message: "Password must not exceed 12 characters"}),
+    confirmPassword: z.string() ,
     haveCoupon: z.boolean().default(false),
     couponCode: z.string().optional(),
   })
+  .refine(
+    (data) => 
+      data.confirmPassword === data.password, {
+        message: "Password does not match",
+        path: ["confirmPassword"],
+      }
+  )
   .refine(
     (data) => {
       if (!data.haveCoupon) return true;
